@@ -31,7 +31,7 @@ componentDidMount() {
               "firstName" : this.firstName.value , "lastName" : this.lastName.value})
               };
                fetch("http://localhost:4000/api/v1/registration",requestOptions)
-              //fetch("https://young-peak-46457.herokuapp.com/api/v1/registration",requestOptions)
+              //fetch("https://todo-api-myapp.herokuapp.com/api/v1/registration",requestOptions)
               .then(res => res.json())
               .then(
                   (res) => {

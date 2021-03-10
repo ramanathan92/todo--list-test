@@ -33,7 +33,7 @@ export default class Dashboard extends Component {
       };
 
       fetch("http://localhost:4000/api/v1/tasks",requestOptions)
-      //fetch("https://young-peak-46457.herokuapp.com/api/v1/tasks",requestOptions)
+      //fetch("https://todo-api-myapp.herokuapp.com/api/v1/tasks",requestOptions)
       .then(res => res.json())
       .then(
           (res) => {
@@ -70,7 +70,7 @@ export default class Dashboard extends Component {
       };
 
       fetch("http://localhost:4000/api/v1/tasks/addTask",requestOptions)
-      //fetch("https://young-peak-46457.herokuapp.com/api/v1/tasks",requestOptions)
+      //fetch("https://todo-api-myapp.herokuapp.com/api/v1/addTask",requestOptions)
       .then(res => res.json())
       .then(
           (res) => {

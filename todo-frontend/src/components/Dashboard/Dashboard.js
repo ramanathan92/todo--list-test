@@ -1,5 +1,6 @@
-import styles from './Dashboard.module.css';
+
 import React, { Component } from "react";
+import './Dashboard.css';
 
 export default class Dashboard extends Component {
 
@@ -12,10 +13,38 @@ export default class Dashboard extends Component {
         sessionUserName: '',
         userName: '',
         password: '',
-        tasks : [],
+        result : {
+          username : "",
+          tasks : []
+        },
         task : "",
         subTask : ""
     };
+    this.onInputchange = this.onInputchange.bind(this);
+    this.onExistingInputchange = this.onExistingInputchange.bind(this);
+    //this.onExistingSubtaskInputchange = this.onExistingSubtaskInputchange.bind(this,key);
+}
+
+onInputchange(event) {
+  this.setState({
+    [event.target.name]: event.target.value
+  });
+}
+onExistingSubtaskInputchange(event,key) {
+  this.state.result.tasks[event.target.name][key] = event.target.value;
+  this.setState({result : this.state.result});
+}
+onExistingInputchange(event,key) {
+  if(key != "" && event.target.value != "" ){
+    this.state.result.tasks[event.target.name][event.target.value] = this.state.result.tasks[event.target.name][key];
+    delete this.state.result.tasks[event.target.name][key];
+    this.setState({result : this.state.result});
+  }
+  else{
+    alert("Task should not be empty");
+  }
+  
+  //this.state.result.tasks[event.target.name]
 }
 
   componentDidMount() {
@@ -24,7 +53,7 @@ export default class Dashboard extends Component {
     }
     else{
       document.getElementById("navbar-elements").style.display = "none";
-      document.getElementById("navbar-elements-log-out").style.display = "block";
+      document.getElementById("navbar-elements-log-out").style.display = "flex";
 
       const requestOptions = {
         method: 'POST',
@@ -36,12 +65,10 @@ export default class Dashboard extends Component {
       //fetch("https://todo-api-myapp.herokuapp.com/api/v1/tasks",requestOptions)
       .then(res => res.json())
       .then(
-          (res) => {
-              console.log(res.tasks);
-              if(res && res.tasks.length != 0){
-                var joined = this.state.tasks.concat(res.tasks);
-                this.setState({tasks : joined});
-                console.log(this.state.tasks);
+          (result) => {
+              console.log(result);
+              if(result && result.tasks.length != 0){
+                this.setState({result : result});
               }
           },
           // Note: it's important to handle errors here
@@ -58,16 +85,83 @@ export default class Dashboard extends Component {
     }
   }
 
+  deleteTask(event,key,value,param){
+  if(param == "subtask"){
+    this.state.result.tasks[value][key] = "";
+  }
+  else{
+    this.state.result.tasks.splice(value,1);
+  }
+  this.setState({result : this.state.result});
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ "username":  localStorage.getItem("sessionUserName"),"tasks" : this.state.result.tasks})
+    };
+
+    fetch("http://localhost:4000/api/v1/tasks/addTask",requestOptions)
+    //fetch("https://todo-api-myapp.herokuapp.com/api/v1/addTask",requestOptions)
+    .then(res => res.json())
+    .then(
+        (res) => {
+            console.log(res);
+            this.setState({tasks : res.tasks});
+            alert("Deleted Successfully");
+
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+            this.setState({
+                tasks : [],
+                isLoaded: true,
+                error: error
+            });
+        }
+    );
+
+  }
+
+  updateTask(){
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ "username":  localStorage.getItem("sessionUserName"),"tasks" : this.state.result.tasks})
+    };
+
+    fetch("http://localhost:4000/api/v1/tasks/addTask",requestOptions)
+    //fetch("https://todo-api-myapp.herokuapp.com/api/v1/addTask",requestOptions)
+    .then(res => res.json())
+    .then(
+        (res) => {
+            console.log(res);
+            this.setState({tasks : res.tasks});
+            alert("Update Successfully");
+
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+            this.setState({
+                tasks : [],
+                isLoaded: true,
+                error: error
+            });
+        }
+    );
+
+  }
 
     addTask(){
-      console.log(this.state);
-      this.state.tasks.push({[this.task.value]:this.subTask.value});
-      console.log(this.state.tasks);
-      const requestOptions = {
+      if(this.state.task != ""){
+        this.state.result.tasks.push({[this.state.task]:this.state.subTask});
+        const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "username":  localStorage.getItem("sessionUserName"),"tasks" : this.state.tasks})
-      };
+        body: JSON.stringify({ "username":  localStorage.getItem("sessionUserName"),"tasks" : this.state.result.tasks})
+        };
 
       fetch("http://localhost:4000/api/v1/tasks/addTask",requestOptions)
       //fetch("https://todo-api-myapp.herokuapp.com/api/v1/addTask",requestOptions)
@@ -76,6 +170,8 @@ export default class Dashboard extends Component {
           (res) => {
               console.log(res);
               this.setState({tasks : res.tasks});
+              this.setState({task : ""});
+              this.setState({subTask : ""});
           },
           // Note: it's important to handle errors here
           // instead of a catch() block so that we don't swallow
@@ -89,25 +185,46 @@ export default class Dashboard extends Component {
           }
       );
 
+      }
+      else{
+        alert("Task cannot be empty");
+      }
+      
+
     }
 
     render() {
 
-      const {tasks} = this.state;
+      const {result} = this.state;
         return (
-            <div>
-              <div>TASKS</div>
+          <div>
+          <div className="task-title">TASKS</div>
+            <div class="alltask-div">
+              
               <div className="task-div">
-              {Object.keys(tasks).map((item,index) => (
-                                        <li key={index}>
-                                            {item} :  {tasks[index]}
-                                        </li>
+              {result.tasks.map((key,index) => (
+                                        <div key={index}>
+                                           <b>Task :</b> <input className="task-input" name={index} type="text" onChange={(e) =>  this.onExistingInputchange(e,Object.keys(key)[0])} value={Object.keys(key)} />
+                                           <button onClick= {this.updateTask.bind(this)} className="btn btn-info delete-btn">Update</button>
+                                           <button onClick= {(e) =>  this.deleteTask(e,Object.keys(key)[0],index,"task")} className="btn btn-danger delete-btn">Delete</button>
+                                           <br></br>
+                                            Sub-task : <input className="subtask-input" name={index} type="text" onChange={(e) =>  this.onExistingSubtaskInputchange(e,Object.keys(key)[0])} value={key[Object.keys(key)]} />
+                                            <button onClick= {this.updateTask.bind(this)} className="btn btn-info delete-btn">Update</button>
+                                            <button onClick= {(e) =>  this.deleteTask(e,Object.keys(key)[0],index,"subtask")} disabled = {(key[Object.keys(key)] == "")? "disabled" : ""}  className="btn btn-danger delete-btn">Delete</button>
+                                        </div>
                                     ))}
 
-              <input type="text" ref={el => this.task = el}   placeholder="Enter Task"/>
-              <input type="text" ref={el => this.subTask = el}   placeholder="Enter Sub-Task"/>
-              <button onClick= {this.addTask.bind(this)} className="btn btn-primary btn-block">Add</button>
               </div>
+            </div>
+            <div className="new-task-div">
+
+            <input type="text" className="new-task-input" name="task" value={this.state.task} onChange={this.onInputchange} placeholder="Enter Task"/>
+              <input type="text" className="new-sub-task-input" name="subTask" value={this.state.subTask} onChange={this.onInputchange}  placeholder="Enter Sub-Task"/>
+              <button onClick= {this.addTask.bind(this)} className="btn btn-primary btn-block">Add</button>
+              
+
+            </div>
+            
             </div>
         );
     }

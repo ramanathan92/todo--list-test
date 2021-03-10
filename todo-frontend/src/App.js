@@ -31,9 +31,14 @@ function App() {
               </li>
             </ul>
             <ul id="navbar-elements-log-out" className="navbar-nav ml-auto">
+            <li className="nav-item user-badge"> 
+              <div > Hello!! {localStorage.getItem("sessionUserName")}</div>
+              </li>
+
               <li className="nav-item" onClick={() => logOut()}>
                 <Link className="nav-link" to={"/sign-in"}>Log out</Link>
-              </li>
+              </li >
+             
             </ul>
           </div>
         </div>

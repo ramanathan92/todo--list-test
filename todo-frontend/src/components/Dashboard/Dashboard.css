@@ -1,0 +1,46 @@
+
+.task-input{
+    margin-left: 41px;
+    margin-bottom: 10px;
+}
+
+.subtask-input{
+    margin-bottom: 50px;
+    margin-left: 13px;
+}
+
+.alltask-div{
+    height: 450px;
+    overflow-y: scroll;
+    border-bottom: 2px solid black;
+}
+
+.task-title{
+    margin-bottom: 16px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 800;
+    border-bottom: 2px solid black;
+}
+
+.new-task-div{
+    margin: 15px 0;
+    padding: 14px;
+}
+
+.new-task-input{
+    width: 170px;
+    margin-right: 25px;
+    margin-bottom: 10px;
+}
+.new-sub-task-input{
+    width: 170px;
+    margin-bottom: 10px;
+}
+.delete-btn{
+    height: 30px;
+    margin-left: 17px;
+    padding-top: 0px;
+    top: -3px;
+    position: relative;
+}

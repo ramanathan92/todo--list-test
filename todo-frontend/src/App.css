@@ -32,6 +32,13 @@
   color: #61dafb;
 }
 
+.user-badge{
+  color: black;
+  top: 8px;
+  position: relative;
+  left: -23px;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

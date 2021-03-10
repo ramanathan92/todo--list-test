@@ -4,7 +4,7 @@ info:
   title: My API
 servers:
   - url: [ 'http://localhost:4000/api/v1']
-  - url: [ 'http://sample.com/api/v1']
+  - url: [ 'https://todo-frontend-myapp.herokuapp.com/api/v1']
 paths:
   /healthcheck:
     get:

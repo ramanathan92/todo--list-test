@@ -22,15 +22,29 @@ const task = (req, res) => {
           tasks : req.body.tasks}
       );
 
-      taskDetails.save(function(err, data) {
+      TaskModel.findOne({username:req.body.username}, 
+        function(err, data) {
             if(err){
                 console.log(err);
             }
-            else{
-                    res.send({"message" : 'success'});
+            if (data == null || data == "null"){
+                taskDetails.save(function(err, data) {
+                          if(err){
+                              console.log(err);
+                          }
+                          else{
+                              console.log(data);
+                              res.json(data);
+                          }
+                      }); 
             }
-        }); 
-        
+            else{
+                data.tasks = req.body.tasks;
+                data.save();
+                console.log(data);
+                res.send(data);
+            }
+        });         
   };
   
 
